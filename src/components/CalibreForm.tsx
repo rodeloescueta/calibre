@@ -19,6 +19,8 @@ import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
 export default function CalibreForm({ data }) {
   const [services, setServices] = useState([]);
   const [selectedService, setSelectedService] = useState(-1);
+  const [addons, setAddons] = useState([]);
+  const [selectedAddons, setSelectedAddons] = useState([]);
   useEffect(() => {
     if (data) {
       setServices(
@@ -36,6 +38,14 @@ export default function CalibreForm({ data }) {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (selectedService !== -1 && selectedService !== 6) {
+      setAddons(data.find((el) => el.id === selectedService)?.extras);
+    } else {
+      setAddons([]);
+    }
+  }, [selectedService]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,15 +54,31 @@ export default function CalibreForm({ data }) {
       bookingDate: "",
       bookingTime: "",
       serviceType: -1,
+      addons: [],
     },
   });
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     console.log("Submitted values", values);
   };
-  const onSelectService = (id) => {
+  const onSelectService = (id: number) => {
     form.setValue("serviceType", id);
+    form.setValue("addons", []);
     setSelectedService(id);
+    setSelectedAddons([]);
   };
+
+  const onSelectAddons = (id: number) => {
+    let oldAddons = [...selectedAddons];
+    if (selectedAddons.includes(id)) {
+      let i = selectedAddons.indexOf(id);
+      setSelectedAddons(oldAddons.splice(i, 1));
+      form.setValue("addons", oldAddons.splice(i, 1));
+    } else {
+      setSelectedAddons([...oldAddons, id]);
+      form.setValue("addons", [...oldAddons, id]);
+    }
+  };
+
   return (
     <Form {...form}>
       <form
@@ -147,7 +173,11 @@ export default function CalibreForm({ data }) {
                         services?.map((el) => (
                           <Card
                             key={el.id}
-                            className="cursor-pointer border-2 border-gray-200 hover:border-gray-900 dark:border-gray-800 dark:hover:border-gray-50"
+                            className={`cursor-pointer border-2 hover:border-blue-200 dark:border-gray-800 dark:hover:border-gray-50 ${
+                              el.id === selectedService
+                                ? "border-blue-300"
+                                : "border-gray-200"
+                            }`}
                             onClick={() => onSelectService(el.id)}
                           >
                             <CardContent className="flex flex-col items-center justify-center p-6">
@@ -175,6 +205,46 @@ export default function CalibreForm({ data }) {
             }}
           />
         </div>
+
+        {addons.length > 0 && (
+          <div className="col-span-6">
+            <FormField
+              control={form.control}
+              name="addons"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Addons</FormLabel>
+                    <FormControl>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {addons?.map((el) => (
+                          <Card
+                            key={el.id}
+                            className={`cursor-pointer border-2 hover:border-blue-200 dark:border-gray-800 dark:hover:border-gray-50 ${
+                              selectedAddons.includes(el.id)
+                                ? "border-blue-300"
+                                : "border-gray-200"
+                            }`}
+                            onClick={() => onSelectAddons(el.id)}
+                          >
+                            <CardContent className="flex flex-col items-center justify-center p-6">
+                              <div className="text-center">
+                                <div className="font-medium">{el.name}</div>
+                              </div>
+                            </CardContent>
+                            <CardFooter>${el.price}</CardFooter>
+                          </Card>
+                        ))}
+                      </div>
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          </div>
+        )}
         <Button type="submit" className="w-full">
           Submit
         </Button>
