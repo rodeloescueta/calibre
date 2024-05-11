@@ -17,7 +17,6 @@ export default async function Home() {
   const services = await getServices();
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      {/* <pre>{JSON.stringify(services, null, 2)}</pre> */}
       <CalibreForm data={services} />
     </main>
   );

@@ -14,13 +14,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { formSchema } from "@/lib/formSchema";
-import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
+import { Card, CardContent, CardFooter } from "./ui/card";
+import { useToast } from "@/components/ui/use-toast";
+import { Toaster } from "./ui/toaster";
 
 export default function CalibreForm({ data }) {
   const [services, setServices] = useState([]);
   const [selectedService, setSelectedService] = useState(-1);
   const [addons, setAddons] = useState([]);
   const [selectedAddons, setSelectedAddons] = useState([]);
+  const { toast } = useToast();
+
   useEffect(() => {
     if (data) {
       setServices(
@@ -59,6 +63,10 @@ export default function CalibreForm({ data }) {
   });
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     console.log("Submitted values", values);
+    toast({
+      title: "Scheduled: Catch up",
+      description: "Friday, February 10, 2023 at 5:57 PM",
+    });
   };
   const onSelectService = (id: number) => {
     form.setValue("serviceType", id);
@@ -245,9 +253,11 @@ export default function CalibreForm({ data }) {
             />
           </div>
         )}
+        <div className="col-span-6"></div>
         <Button type="submit" className="w-full">
           Submit
         </Button>
+        <Toaster />
       </form>
     </Form>
   );
