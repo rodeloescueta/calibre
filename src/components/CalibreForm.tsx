@@ -17,6 +17,7 @@ import { formSchema } from "@/lib/formSchema";
 import { Card, CardContent, CardFooter } from "./ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "./ui/toaster";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 export default function CalibreForm({ data }) {
   const [services, setServices] = useState([]);
@@ -202,7 +203,7 @@ export default function CalibreForm({ data }) {
                           </Card>
                         ))
                       ) : (
-                        <>Loading...</>
+                        <LoadingSpinner />
                       )}
                     </div>
                   </FormControl>
