@@ -63,10 +63,9 @@ export default function CalibreForm({ data }) {
     },
   });
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log("Submitted values", values);
     toast({
-      title: "Scheduled: Catch up",
-      description: "Friday, February 10, 2023 at 5:57 PM",
+      title: "Submitted",
+      description: `${form.getValues("bookingDate")} Booked!`,
     });
   };
   const onSelectService = (id: number) => {
